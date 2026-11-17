@@ -1,0 +1,35 @@
+{
+  "name": "gamingate-desktop",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Gamingate - multiplatform cloud-gaming gateway (Electron desktop shell)",
+  "main": "./out/main/index.js",
+  "author": "Project Gamingate <dev@gamingate.invalid>",
+  "homepage": "https://github.com/Chazyl/Gamingate",
+  "license": "Apache-2.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.10",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "https://github.com/castlabs/electron-releases#v44.1.0+wvcus",
+    "electron-builder": "^26.16.0",
+    "electron-vite": "^5.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.0"
+  }
+}

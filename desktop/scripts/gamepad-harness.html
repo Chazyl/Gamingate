@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gamingate — gamepad timestamp harness (dev-only)</title>
+    <style>
+      body {
+        font: 14px/1.5 system-ui, sans-serif;
+        background: #0b0f17;
+        color: #e6eaf2;
+        margin: 0;
+        padding: 24px;
+      }
+      h1 { font-size: 18px; }
+      table { border-collapse: collapse; margin-top: 16px; }
+      th, td { text-align: left; padding: 4px 16px 4px 0; }
+      th { color: #94a3b8; font-weight: 600; }
+      .big { font-size: 24px; font-weight: 600; }
+      .ok { color: #34d399; }
+      .warn { color: #fbbf24; }
+    </style>
+  </head>
+  <body>
+    <h1>Gamepad timestamp freshness harness</h1>
+    <p>
+      Dev-only. Polls <code>navigator.getGamepads()[i].timestamp</code> on a ~4&nbsp;ms interval and
+      reports inter-update intervals. The browser-side source polls at ~250&nbsp;Hz; this proves the
+      pipeline is not throttled below 120&nbsp;Hz while the session view is focused and foregrounded.
+      Frame counting is explicitly <strong>not</strong> a valid measure (PITFALLS Pitfall 5).
+    </p>
+    <p id="status">Pick up a controller (press a button)…</p>
+    <p class="big" id="median">median: —</p>
+    <table>
+      <thead>
+        <tr><th>metric</th><th>value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>samples</td><td id="samples">0</td></tr>
+        <tr><td>p50 inter-update</td><td id="p50">—</td></tr>
+        <tr><td>p95 inter-update</td><td id="p95">—</td></tr>
+        <tr><td>inferred rate</td><td id="rate">—</td></tr>
+        <tr><td>last <code>timestamp</code></td><td id="ts">—</td></tr>
+      </tbody>
+    </table>
+
+    <script>
+      // Copy the whole output for the PERF-INPUT.md record.
+      const POLL_MS = 4
+      const MAX_SAMPLES = 2000 // ~8s of sustained input at source cadence
+      const deltas = []
+      let lastTimestamp = null
+      let samples = 0
+
+      const $ = (id) => document.getElementById(id)
+
+      function percentile(sorted, p) {
+        if (sorted.length === 0) return null
+        const index = Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))
+        return sorted[index]
+      }
+
+      function medianOf(values) {
+        if (values.length === 0) return null
+        const sorted = [...values].sort((a, b) => a - b)
+        return percentile(sorted, 50)
+      }
+
+      function render() {
+        const sorted = [...deltas].sort((a, b) => a - b)
+        const p50 = percentile(sorted, 50)
+        const p95 = percentile(sorted, 95)
+        $('samples').textContent = String(samples)
+        $('p50').textContent = p50 === null ? '—' : p50.toFixed(2) + ' ms'
+        $('p95').textContent = p95 === null ? '—' : p95.toFixed(2) + ' ms'
+        $('median').textContent = p50 === null ? 'median: —' : 'median: ' + p50.toFixed(2) + ' ms'
+        if (p50 === null) return
+        const rate = 1000 / p50
+        const rateEl = $('rate')
+        rateEl.textContent = rate.toFixed(1) + ' Hz'
+        rateEl.className = p50 <= 8 ? 'ok' : 'warn'
+        $('median').className = 'big ' + (p50 <= 8 ? 'ok' : 'warn')
+      }
+
+      setInterval(() => {
+        const pads = navigator.getGamepads ? navigator.getGamepads() : []
+        const pad = Array.from(pads).find((p) => p && p.timestamp)
+        if (!pad) return
+        $('status').textContent = 'Controller: ' + pad.id
+        $('ts').textContent = pad.timestamp.toFixed(3)
+        if (lastTimestamp !== null && pad.timestamp > lastTimestamp) {
+          deltas.push(pad.timestamp - lastTimestamp)
+          samples += 1
+          if (deltas.length > MAX_SAMPLES) deltas.shift()
+          render()
+          // eslint-disable-next-line no-console
+          console.log('[gamepad-harness] median_ms=' + (medianOf(deltas) || 0).toFixed(2))
+        }
+        lastTimestamp = pad.timestamp
+      }, POLL_MS)
+    </script>
+  </body>
+</html>

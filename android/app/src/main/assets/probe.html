@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gamingate probe</title>
+    <style>
+      body { font-family: monospace; margin: 1rem; }
+      pre { white-space: pre-wrap; word-break: break-word; }
+    </style>
+  </head>
+  <body>
+    <h1>Gamingate WebView probe</h1>
+    <p>EME ladder (com.widevine.alpha) + gamepad enumeration:</p>
+    <pre id="out">running...</pre>
+    <button id="open-luna" onclick="location.href='https://luna.amazon.com/'">
+      Open Luna (Rung 2)
+    </button>
+
+    <script>
+      async function ladder() {
+        const out = {};
+        const configs = [
+          ['hwSecure', 'HW_SECURE_ALL'],
+          ['swSecure', 'SW_SECURE_DECODE'],
+        ];
+        for (const [label, robustness] of configs) {
+          try {
+            const access = await navigator.requestMediaKeySystemAccess('com.widevine.alpha', [
+              {
+                initDataTypes: ['cenc'],
+                videoCapabilities: [
+                  { contentType: 'video/mp4;codecs="avc1.42E01E"', robustness },
+                ],
+              },
+            ]);
+            const cap = access.getConfiguration().videoCapabilities?.[0];
+            out[label] = cap?.robustness ?? 'granted';
+          } catch (e) {
+            out[label] = 'rejected: ' + e.name;
+          }
+        }
+        return out;
+      }
+
+      function gamepads() {
+        return Array.from(navigator.getGamepads())
+          .filter(Boolean)
+          .map((gp) => ({
+            index: gp.index,
+            id: gp.id,
+            mapping: gp.mapping,
+            buttons: gp.buttons.length,
+            axes: gp.axes.length,
+          }));
+      }
+
+      (async () => {
+        const result = { eme: await ladder(), gamepads: gamepads() };
+        document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+        document.title = 'probe-done';
+      })();
+    </script>
+  </body>
+</html>

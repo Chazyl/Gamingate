@@ -1,0 +1,61 @@
+# --- Dependencies -----------------------------------------------------------
+node_modules/
+.npm/
+.pnpm-store/
+
+# --- Build output -----------------------------------------------------------
+out/
+dist/
+*.tsbuildinfo
+.eslintcache
+
+# --- Packaged artifacts (built in Docker; never source) ---------------------
+*.AppImage
+*.deb
+*.rpm
+*.snap
+*.dmg
+*.pkg
+*.exe
+*.msi
+*.apk
+*.aab
+*.blockmap
+latest*.yml
+*.asar
+
+# --- Android / Gradle -------------------------------------------------------
+.gradle/
+android/**/build/
+local.properties
+*.keystore
+*.jks
+*.pepk
+
+# --- Secrets / credentials (never commit) -----------------------------------
+*.pem
+*.key
+*.p12
+.env
+.env.*
+*credentials*
+*token*.txt
+*recovery-codes*
+
+# --- GSD machine state (keep the planning docs) -----------------------------
+.gsd/
+.planning/state.json
+.planning/milestone.lock
+.planning/quick/
+
+# --- OS / editor ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# --- Logs -------------------------------------------------------------------
+*.log
+npm-debug.log*

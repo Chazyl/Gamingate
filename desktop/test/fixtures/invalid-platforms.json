@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1",
+  "platforms": [
+    {
+      "id": "broken",
+      "name": "Broken Packet",
+      "entryUrl": 123,
+      "allowedOrigins": ["https://broken.example"],
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+      "partition": "persist:broken",
+      "permissions": {
+        "media": false,
+        "input": false,
+        "pointerLock": false,
+        "fullscreen": false
+      },
+      "headerRules": [],
+      "codecHints": [],
+      "authCookieHints": [],
+      "gpuHints": {},
+      "thirdPartyCookies": false
+    }
+  ]
+}

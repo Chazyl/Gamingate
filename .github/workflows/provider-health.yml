@@ -1,0 +1,30 @@
+# Nightly Luna provider health-check (PKG-02).
+#
+# Reuses the Phase 2/3 headless container smoke — no new provider logic. The
+# smoke (`desktop/scripts/engine-smoke.sh luna`, reached via
+# `docker-verify.sh smoke luna`) boots the registry-driven engine top-level to
+# Luna and asserts it is healthy. A red run is the drift signal for:
+#   - TLS/UA drift       (Luna starts rejecting the embedded Chromium UA)
+#   - EME/DRM drift      (Widevine/robustness negotiation no longer resolves)
+#   - auth/redirect drift (entry or final top-level origin leaves allowedOrigins)
+#   - registry/schema drift (bundled platforms.json no longer validates)
+# It never signs in and uses no provider credentials (threat T-04-11).
+name: provider-health
+
+on:
+  schedule:
+    # Nightly, 06:00 UTC.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  luna-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Headless Luna smoke (container)
+        run: bash desktop/scripts/docker-verify.sh smoke luna

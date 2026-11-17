@@ -1,0 +1,46 @@
+/*
+ * Gamingate shell design tokens (UI-SPEC "Design System"). Dark theme; exact
+ * spacing / type / color values are the normative contract. Applied via plain
+ * CSS custom properties — no framework, no web font, no icon dependency.
+ */
+:root {
+  /* Color (60/30/10) */
+  --og-bg: #0b0f17;
+  --og-surface: #161c27;
+  --og-accent: #4c8dff;
+  --og-accent-hover: #5b98ff;
+  --og-destructive: #f87171;
+  --og-success: #34d399;
+  --og-warning: #fbbf24;
+  --og-border: #232b3a;
+  --og-text: #e6eaf2;
+  --og-text-muted: #94a3b8;
+  --og-text-disabled: #5a6472;
+
+  /* Spacing (multiples of 4) */
+  --og-xs: 4px;
+  --og-sm: 8px;
+  --og-md: 16px;
+  --og-lg: 24px;
+  --og-xl: 32px;
+  --og-2xl: 48px;
+  --og-3xl: 64px;
+
+  /* Typography — exactly two weights */
+  --og-font: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+  --og-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --og-fs-label: 12px;
+  --og-fs-body: 14px;
+  --og-fs-heading: 18px;
+  --og-fs-display: 24px;
+  --og-fw-regular: 400;
+  --og-fw-semibold: 600;
+  --og-lh-label: 1.4;
+  --og-lh-body: 1.5;
+  --og-lh-heading: 1.2;
+  --og-lh-display: 1.2;
+
+  /* Shape */
+  --og-radius: 12px;
+  --og-radius-sm: 8px;
+}

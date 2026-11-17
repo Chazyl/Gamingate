@@ -1,0 +1,109 @@
+plugins {
+    id "com.android.application" version "9.2.0"
+}
+
+// Release signing material is NEVER committed. The build reads it from Gradle
+// properties so the same buildType serves both the container dev build (a
+// throwaway keystore generated under the container's /tmp) and CI release
+// signing (properties injected from secrets):
+//
+//   -Pgamingate.keystore.path=/path/to/release.keystore
+//   -Pgamingate.keystore.password=<store password|env>
+//   -Pgamingate.keystore.alias=<key alias>               (default: gamingate)
+//   -Pgamingate.keystore.keyPassword=<key password|env>  (default: store password)
+//
+// A password passed as the literal `env` is read from the environment instead
+// (GAMINGATE_KS_STORE_PASS / GAMINGATE_KS_KEY_PASS), so production CI never puts a
+// secret on the command line or in the process table. See docs/SIGNING.md.
+//
+// With no keystore.path the release build stays unsigned (fail-safe: never
+// signed with an implicit/test key). See docs/SIGNING.md (Plan 04-05).
+def envOrNull = { String name -> providers.environmentVariable(name).orNull }
+def resolvePassword = { String propertyName, String envName ->
+    def raw = providers.gradleProperty(propertyName).orNull
+    raw == "env" ? envOrNull(envName) : raw
+}
+def releaseKeystorePath = providers.gradleProperty("gamingate.keystore.path").orNull
+def releaseKeystorePassword =
+    resolvePassword("gamingate.keystore.password", "GAMINGATE_KS_STORE_PASS")
+def releaseKeystoreAlias = providers.gradleProperty("gamingate.keystore.alias").getOrElse("gamingate")
+def releaseKeystoreKeyPassword =
+    resolvePassword("gamingate.keystore.keyPassword", "GAMINGATE_KS_KEY_PASS") ?: releaseKeystorePassword
+
+android {
+    namespace "com.gamingate.gateway"
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.gamingate.gateway"
+        minSdk 30
+        targetSdk 36
+        versionCode 1
+        versionName "0.0.1"
+    }
+
+    signingConfigs {
+        release {
+            if (releaseKeystorePath) {
+                storeFile file(releaseKeystorePath)
+                storePassword releaseKeystorePassword
+                keyAlias releaseKeystoreAlias
+                keyPassword releaseKeystoreKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            debuggable false
+            if (releaseKeystorePath) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// One source of truth: stage the shared registry + JSON Schema into app assets
+// at build time. The generated asset dir is gitignored and never hand-edited;
+// the schema is generated from the zod Registry by
+// desktop/scripts/generate-schema.ts.
+def registrySourceDir = file("${rootProject.projectDir}/../desktop")
+
+tasks.register("stageRegistryAssets", Copy) {
+    from("${registrySourceDir}/platforms.json")
+    from("${registrySourceDir}/platforms.schema.json")
+    into file("src/main/assets/registry")
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+    dependsOn("stageRegistryAssets")
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.10"
+    // The only new JVM dependency: language-neutral JSON Schema validator used by
+    // RegistryValidator (fail-closed REG-01 enforcement on the Android runtime).
+    implementation "com.networknt:json-schema-validator:1.5.1"
+    testImplementation "junit:junit:4.13.2"
+}
+
+// The JVM validator test reads the real registry from the repo tree (no Android
+// framework/assets in the unit-test process). In the container this resolves to
+// /work/desktop; on a dev host, the sibling repo directory.
+tasks.withType(Test).configureEach {
+    systemProperty "gamingate.registry.dir",
+        file("${rootProject.projectDir}/../desktop").absolutePath
+    testLogging {
+        events "passed", "failed", "skipped"
+        exceptionFormat "full"
+    }
+}

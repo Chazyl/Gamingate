@@ -1,0 +1,141 @@
+# Project Gamingate — one pipeline, all artifacts (PKG-01).
+#
+# Job graph:
+#   lint-test ─┬─> build-desktop ─┐
+#              └─> build-android ─┴─> release   (tags only)
+#
+# Every build/test runs through `desktop/scripts/docker-verify.sh`, which
+# does ALL of its work inside containers (AGENTS.md: container-only; the runner
+# host never runs npm/node/Gradle against the project). ubuntu-latest ships
+# Docker, so nothing is installed on the host here.
+#
+# No signing secrets are used: the artifacts are unsigned/self-signed by design
+# (see docs/SIGNING.md, Plan 04-05). If a signing step is ever added it MUST read
+# values from `${{ secrets.* }}` and MUST NOT echo them (threat T-04-09).
+# Enablement + secret names: docs/CI.md.
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege by default; only the release job opts into contents: write.
+permissions:
+  contents: read
+
+env:
+  # Bind docker-verify.sh's cache volume (npm/electron/electron-builder/Gradle)
+  # to a workspace path so actions/cache can persist it across runs. The
+  # "Bind cache volume" step below pre-creates the named volume as a bind to
+  # this path; docker-verify.sh's own `docker volume create` is then a no-op.
+  GAMINGATE_CI_CACHE: ${{ github.workspace }}/.ci-cache/npm-electron
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: CI workflow contract gate (container)
+        run: bash desktop/scripts/docker-verify.sh ci-config
+      - name: Desktop packaging config gate (container)
+        run: bash desktop/scripts/docker-verify.sh package-desktop-config
+      - name: Typecheck (container)
+        run: bash desktop/scripts/docker-verify.sh typecheck
+      - name: Unit tests (container)
+        run: bash desktop/scripts/docker-verify.sh test
+
+  build-desktop:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore npm/electron/electron-builder cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.GAMINGATE_CI_CACHE }}
+          key: gamingate-cache-${{ runner.os }}-${{ hashFiles('desktop/package.json') }}
+          restore-keys: |
+            gamingate-cache-${{ runner.os }}-
+      - name: Bind cache volume to workspace path
+        run: |
+          set -euo pipefail
+          mkdir -p "$GAMINGATE_CI_CACHE"
+          docker volume create --driver local \
+            --opt type=none --opt device="$GAMINGATE_CI_CACHE" --opt o=bind \
+            gamingate-desktop-cache
+      - name: Package AppImage + deb (container)
+        run: bash desktop/scripts/docker-verify.sh package-appimage
+      - name: Collect update metadata (latest-linux.yml + blockmaps)
+        # package-appimage emits only the AppImage/deb to dist/; electron-builder
+        # writes latest-linux.yml (and, at publish time, *.blockmap) into the
+        # /work volume inside the container. Copy them out so the release feed
+        # carries the update metadata electron-updater reads.
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v gamingate-desktop-work:/work \
+            -v "$PWD/desktop/dist:/out" \
+            electronuserland/builder:22 \
+            bash -c 'shopt -s nullglob; cp /work/dist/latest*.yml /work/dist/*.blockmap /out/ 2>/dev/null || true'
+          ls -la desktop/dist
+      - name: Upload desktop artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux
+          if-no-files-found: error
+          path: |
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+            desktop/dist/latest*.yml
+            desktop/dist/*.blockmap
+
+  build-android:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore npm/electron/Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.GAMINGATE_CI_CACHE }}
+          key: gamingate-cache-${{ runner.os }}-${{ hashFiles('desktop/package.json') }}
+          restore-keys: |
+            gamingate-cache-${{ runner.os }}-
+      - name: Bind cache volume to workspace path
+        run: |
+          set -euo pipefail
+          mkdir -p "$GAMINGATE_CI_CACHE"
+          docker volume create --driver local \
+            --opt type=none --opt device="$GAMINGATE_CI_CACHE" --opt o=bind \
+            gamingate-desktop-cache
+      - name: Package release APK (container)
+        run: bash desktop/scripts/docker-verify.sh package-android
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          if-no-files-found: error
+          path: android/dist/*.apk
+
+  release:
+    needs: [build-desktop, build-android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/**/*
+          fail_on_unmatched_files: true

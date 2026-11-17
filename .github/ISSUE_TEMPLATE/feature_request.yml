@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest an idea or improvement
+title: "[feat] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Please describe the problem first, then the change you
+        have in mind. Remember the project is registry-driven: provider support is
+        usually a `platforms.json` change, not engine work.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the need or friction you're hitting.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen? Alternatives are welcome too.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Desktop shell / UI
+        - Gateway engine / registry
+        - Provider support
+        - Android
+        - Packaging / installers
+        - CI / developer experience
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Mockups, links to prior art, related issues.
+    validations:
+      required: false

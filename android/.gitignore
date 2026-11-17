@@ -1,0 +1,10 @@
+.gradle/
+build/
+dist/
+local.properties
+*.iml
+*.keystore
+*.jks
+
+# Generated at build time from desktop/ (single source of truth).
+app/src/main/assets/registry/

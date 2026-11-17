@@ -1,0 +1,93 @@
+name: Bug report
+description: Something is broken or not behaving as documented
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Please fill in as much as you can —
+        complete reports are fixed far faster. For security issues, see SECURITY.md
+        (do **not** file them here).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and its impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Launch Gamingate
+        2. Select Amazon Luna
+        3. ...
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Linux (AppImage)
+        - Linux (.deb)
+        - Windows (.exe/.msi)
+        - Android (.apk)
+        - Built from source
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Gamingate version
+      description: From the installer, the release page, or the app's About/settings.
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS and version
+      placeholder: "e.g. Ubuntu 24.04, Windows 11 23H2, Android 14 (Pixel 8)"
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      placeholder: "e.g. Amazon Luna"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / terminal output
+      description: Redact anything personal (tokens, email, names).
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, GPU/driver details, whether hardware decode is on, etc.
+    validations:
+      required: false

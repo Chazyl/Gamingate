@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "1"
+      ]
+    },
+    "platforms": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "entryUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "allowedOrigins": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "userAgent": {
+            "type": "string",
+            "minLength": 1
+          },
+          "partition": {
+            "type": "string",
+            "format": "starts_with",
+            "pattern": "^persist:.*"
+          },
+          "permissions": {
+            "type": "object",
+            "properties": {
+              "media": {
+                "type": "boolean"
+              },
+              "input": {
+                "type": "boolean"
+              },
+              "pointerLock": {
+                "type": "boolean"
+              },
+              "fullscreen": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "media",
+              "input",
+              "pointerLock",
+              "fullscreen"
+            ],
+            "additionalProperties": false
+          },
+          "headerRules": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "urlFilter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "headers": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "urlFilter",
+                "headers"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "codecHints": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authCookieHints": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "gpuHints": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "disableHardwareAcceleration": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "thirdPartyCookies": {
+            "type": "boolean"
+          },
+          "platformSpoof": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string",
+                "minLength": 1
+              },
+              "platformVersion": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "platform",
+              "platformVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "entryUrl",
+          "allowedOrigins",
+          "userAgent",
+          "partition",
+          "permissions",
+          "headerRules",
+          "codecHints",
+          "authCookieHints",
+          "gpuHints",
+          "thirdPartyCookies"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "platforms"
+  ],
+  "additionalProperties": false
+}

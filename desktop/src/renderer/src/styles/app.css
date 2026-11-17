@@ -1,0 +1,656 @@
+/*
+ * Gamingate shell styles (UI-SPEC). Plain CSS over the token layer; every
+ * interactive primitive defines default / hover / active / focus-visible /
+ * disabled / loading states. Meaning is never colour-only (badges carry text).
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--og-bg);
+  color: var(--og-text);
+  font-family: var(--og-font);
+  font-size: var(--og-fs-body);
+  line-height: var(--og-lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--og-accent);
+  outline-offset: 2px;
+}
+
+/* --- Layout ---------------------------------------------------------------- */
+.og-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.og-header {
+  height: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--og-xl);
+  border-bottom: 1px solid var(--og-border);
+  background: var(--og-surface);
+}
+
+.og-header__title {
+  font-size: var(--og-fs-heading);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-heading);
+  margin: 0;
+}
+
+.og-content {
+  flex: 1 1 auto;
+  padding: var(--og-xl);
+}
+
+/* --- In-session top chrome (UI-SPEC Surface 2, exactly 48px) ---------------- */
+.og-chrome {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--og-md);
+  padding: 0 var(--og-md);
+  background: var(--og-surface);
+  border-bottom: 1px solid var(--og-border);
+}
+
+.og-chrome__name {
+  font-size: var(--og-fs-heading);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-heading);
+  color: var(--og-text);
+}
+
+/* Toasts inside the 48px session bar: the default fixed-bottom placement would
+   be clipped, so anchor to the top of the bar instead. */
+.og-shell--session .og-toast {
+  position: fixed;
+  top: var(--og-xs);
+  bottom: auto;
+  max-width: calc(100% - 2 * var(--og-md));
+}
+
+.og-empty {
+  text-align: center;
+  padding: var(--og-3xl) var(--og-lg);
+}
+
+.og-empty__heading {
+  font-size: var(--og-fs-display);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-display);
+  margin: 0 0 var(--og-sm);
+}
+
+.og-empty__body {
+  color: var(--og-text-muted);
+  margin: 0;
+}
+
+.og-banner {
+  margin: var(--og-md) var(--og-xl) 0;
+  padding: var(--og-md);
+  border: 1px solid var(--og-destructive);
+  border-radius: var(--og-radius-sm);
+  color: var(--og-destructive);
+  background: var(--og-surface);
+}
+
+/* --- Platform grid --------------------------------------------------------- */
+.og-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--og-xl);
+}
+
+@media (min-width: 960px) {
+  .og-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.og-card {
+  background: var(--og-surface);
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius);
+  padding: var(--og-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-md);
+}
+
+.og-card__name {
+  font-size: var(--og-fs-display);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-display);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.og-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--og-sm);
+}
+
+.og-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--og-sm);
+  margin-top: auto;
+}
+
+.og-card__error {
+  color: var(--og-destructive);
+  font-size: var(--og-fs-body);
+}
+
+/* --- Skeleton (loading) ---------------------------------------------------- */
+.og-skeleton {
+  background: var(--og-surface);
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius);
+  padding: var(--og-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-md);
+}
+
+.og-skeleton__line {
+  height: 16px;
+  border-radius: var(--og-radius-sm);
+  background: var(--og-border);
+  animation: og-pulse 1.6s ease-in-out infinite;
+}
+
+.og-skeleton__line--short {
+  width: 40%;
+}
+
+@keyframes og-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* --- Button ---------------------------------------------------------------- */
+.og-btn {
+  font: inherit;
+  font-weight: var(--og-fw-semibold);
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--og-sm) var(--og-md);
+  border-radius: var(--og-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-xs);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.og-btn:disabled {
+  cursor: not-allowed;
+  color: var(--og-text-disabled);
+  background: transparent;
+  border-color: var(--og-border);
+}
+
+.og-btn--primary {
+  background: var(--og-accent);
+  color: #08101f;
+}
+.og-btn--primary:hover:not(:disabled) {
+  background: var(--og-accent-hover);
+}
+.og-btn--primary:active:not(:disabled) {
+  background: var(--og-accent);
+}
+
+.og-btn--secondary {
+  background: transparent;
+  color: var(--og-text);
+  border-color: var(--og-border);
+}
+.og-btn--secondary:hover:not(:disabled) {
+  border-color: var(--og-text-muted);
+}
+.og-btn--secondary:active:not(:disabled) {
+  background: var(--og-bg);
+}
+
+.og-btn--ghost {
+  background: transparent;
+  color: var(--og-text);
+}
+.og-btn--ghost:hover:not(:disabled) {
+  background: var(--og-bg);
+}
+.og-btn--ghost:active:not(:disabled) {
+  background: var(--og-border);
+}
+
+.og-btn--destructive {
+  background: transparent;
+  color: var(--og-destructive);
+  border-color: var(--og-destructive);
+}
+.og-btn--destructive:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.12);
+}
+.og-btn--destructive:active:not(:disabled) {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.og-btn--icon {
+  padding: var(--og-sm);
+}
+
+.og-btn--loading {
+  cursor: progress;
+}
+
+.og-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: og-spin 700ms linear infinite;
+}
+
+@keyframes og-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Badge ----------------------------------------------------------------- */
+.og-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-xs);
+  padding: var(--og-xs) var(--og-sm);
+  border-radius: 999px;
+  font-size: var(--og-fs-label);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-label);
+  border: 1px solid var(--og-border);
+  color: var(--og-text-muted);
+  background: var(--og-bg);
+}
+
+.og-badge--success {
+  color: var(--og-success);
+  border-color: var(--og-success);
+}
+.og-badge--warning {
+  color: var(--og-warning);
+  border-color: var(--og-warning);
+}
+.og-badge--muted {
+  color: var(--og-text-muted);
+}
+.og-badge--neutral {
+  color: var(--og-text);
+}
+
+/* --- Segmented control (native radio group) -------------------------------- */
+.og-segmented {
+  display: inline-flex;
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius-sm);
+  overflow: hidden;
+}
+
+.og-segmented__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--og-md);
+  cursor: pointer;
+  color: var(--og-text-muted);
+  border-right: 1px solid var(--og-border);
+}
+
+.og-segmented__option:last-child {
+  border-right: none;
+}
+
+.og-segmented__option:hover {
+  background: var(--og-bg);
+}
+
+.og-segmented__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.og-segmented__option:has(input:checked) {
+  background: var(--og-accent);
+  color: #08101f;
+  font-weight: var(--og-fw-semibold);
+}
+
+.og-segmented__option:has(input:focus-visible) {
+  outline: 2px solid var(--og-accent);
+  outline-offset: -2px;
+}
+
+.og-segmented__option:has(input:disabled) {
+  cursor: not-allowed;
+  color: var(--og-text-disabled);
+  background: transparent;
+}
+
+/* --- Toggle ---------------------------------------------------------------- */
+.og-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-sm);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.og-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.og-toggle__track {
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--og-border);
+  position: relative;
+  transition: background-color 120ms ease;
+}
+
+.og-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--og-text);
+  transition: transform 120ms ease;
+}
+
+.og-toggle:has(input:checked) .og-toggle__track {
+  background: var(--og-accent);
+}
+.og-toggle:has(input:checked) .og-toggle__thumb {
+  transform: translateX(16px);
+}
+.og-toggle:has(input:focus-visible) {
+  outline: 2px solid var(--og-accent);
+  outline-offset: 2px;
+}
+.og-toggle:has(input:disabled) {
+  cursor: not-allowed;
+  color: var(--og-text-disabled);
+}
+
+/* --- Toast ----------------------------------------------------------------- */
+.og-toast {
+  position: fixed;
+  bottom: var(--og-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--og-surface);
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius-sm);
+  padding: var(--og-sm) var(--og-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: og-toast-in 160ms ease-out;
+  z-index: 20;
+}
+
+@keyframes og-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* --- Confirm dialog -------------------------------------------------------- */
+.og-dialog {
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius);
+  background: var(--og-surface);
+  color: var(--og-text);
+  padding: var(--og-lg);
+  max-width: 420px;
+  width: calc(100% - 2 * var(--og-xl));
+}
+
+.og-dialog::backdrop {
+  background: rgba(11, 15, 23, 0.7);
+}
+
+.og-dialog__title {
+  font-size: var(--og-fs-heading);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-heading);
+  margin: 0 0 var(--og-sm);
+}
+
+.og-dialog__body {
+  margin: 0 0 var(--og-lg);
+  color: var(--og-text-muted);
+}
+
+.og-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--og-sm);
+}
+
+/* --- Settings -------------------------------------------------------------- */
+.og-settings {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-lg);
+}
+
+.og-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-sm);
+}
+
+.og-field__label {
+  font-size: var(--og-fs-label);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-label);
+  color: var(--og-text-muted);
+}
+
+.og-field__value {
+  font-family: var(--og-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--og-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.og-section {
+  border-top: 1px solid var(--og-border);
+  padding-top: var(--og-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-md);
+}
+
+.og-section__title {
+  font-size: var(--og-fs-heading);
+  font-weight: var(--og-fw-semibold);
+  margin: 0;
+}
+
+.og-placeholder {
+  color: var(--og-text-muted);
+  margin: 0;
+}
+
+/* --- Shortcuts reference (UI-SPEC Surface 3) ------------------------------- */
+.og-shortcuts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-sm);
+}
+
+.og-shortcuts__heading {
+  font-size: var(--og-fs-label);
+  font-weight: var(--og-fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--og-text-muted);
+  margin: var(--og-sm) 0 0;
+}
+
+.og-shortcuts__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--og-md);
+}
+
+.og-kbd {
+  font-family: var(--og-mono);
+  font-size: var(--og-fs-label);
+  color: var(--og-text);
+  background: var(--og-bg);
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius-sm);
+  padding: 2px var(--og-sm);
+  white-space: nowrap;
+}
+
+.og-shortcuts__effect {
+  color: var(--og-text-muted);
+}
+
+.og-shortcuts__note {
+  color: var(--og-text-muted);
+  margin: 0;
+}
+
+/* --- Reduced motion: suppress motion, never values ------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Stream-health overlay (UI-SPEC Surface 4) ----------------------------- */
+/* The overlay native view is transparent; only the panel paints a surface. */
+body:has(.og-health) {
+  background: transparent;
+}
+
+.og-health {
+  background: var(--og-surface);
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius);
+  padding: var(--og-md);
+  color: var(--og-text);
+}
+
+.og-health__title {
+  margin: 0 0 var(--og-sm);
+  font-size: var(--og-fs-heading);
+  font-weight: var(--og-fw-semibold);
+  line-height: var(--og-lh-heading);
+}
+
+.og-health__list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-sm);
+}
+
+.og-health__field {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--og-sm);
+}
+
+.og-health__label {
+  font-size: var(--og-fs-label);
+  color: var(--og-text-muted);
+}
+
+.og-health__value {
+  margin: 0;
+  font-family: var(--og-mono);
+  font-size: var(--og-fs-label);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.og-health__caption {
+  display: block;
+  color: var(--og-text-muted);
+  font-family: var(--og-font);
+}
+
+/* Values update at 1s but the polite live region must never spam. Visually
+   hidden; still announced to assistive tech (UI-SPEC Accessibility Contract). */
+.og-health__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+

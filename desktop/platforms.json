@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1",
+  "platforms": [
+    {
+      "id": "luna",
+      "name": "Amazon Luna",
+      "entryUrl": "https://luna.amazon.com/",
+      "allowedOrigins": [
+        "https://luna.amazon.com",
+        "https://www.luna.amazon.com",
+        "https://luna.amazon.fr",
+        "https://luna.amazon.co.uk",
+        "https://luna.amazon.de",
+        "https://luna.amazon.ca",
+        "https://www.amazon.com",
+        "https://amazon.com",
+        "https://www.amazon.fr",
+        "https://amazon.fr",
+        "https://www.amazon.co.uk",
+        "https://amazon.co.uk",
+        "https://www.amazon.de",
+        "https://amazon.de",
+        "https://www.amazon.ca",
+        "https://amazon.ca",
+        "https://account.amazon.com",
+        "https://www.amazon.es",
+        "https://amazon.es",
+        "https://www.amazon.it",
+        "https://amazon.it"
+      ],
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+      "partition": "persist:luna",
+      "platformSpoof": {
+        "platform": "Windows",
+        "platformVersion": "10.0.0"
+      },
+      "permissions": {
+        "media": true,
+        "input": true,
+        "pointerLock": true,
+        "fullscreen": true
+      },
+      "headerRules": [],
+      "codecHints": [],
+      "authCookieHints": ["session-token", "at-main", "sess-at-main"],
+      "gpuHints": {},
+      "thirdPartyCookies": true
+    },
+    {
+      "id": "geforce-now-spike",
+      "name": "GeForce NOW (read-only spike)",
+      "entryUrl": "https://www.nvidia.com/en-us/geforce-now/",
+      "allowedOrigins": [
+        "https://www.nvidia.com"
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+      "partition": "persist:geforce-now-spike",
+      "permissions": {
+        "media": false,
+        "input": false,
+        "pointerLock": false,
+        "fullscreen": false
+      },
+      "headerRules": [],
+      "codecHints": [],
+      "authCookieHints": [],
+      "gpuHints": {},
+      "thirdPartyCookies": false
+    }
+  ]
+}

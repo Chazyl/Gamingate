@@ -1,0 +1,52 @@
+# electron-builder configuration for Project Gamingate (PKG-01).
+#
+# Built in Docker via scripts/docker-verify.sh (container-only, AGENTS.md).
+#
+# CRITICAL: the runtime is the castlabs ECS fork
+# (devDependency electron: https://github.com/castlabs/electron-releases#v44.1.0+wvcus).
+# `electronDist` points electron-builder at the ECS binaries already fetched by
+# `node node_modules/electron/install.js`; without it electron-builder tries to
+# download stock Electron from GitHub, which breaks Widevine CDM provisioning.
+# Do NOT replace the electron spec with a stock version.
+appId: com.gamingate.gateway
+productName: Gamingate
+directories:
+  output: dist
+files:
+  - out/**/*
+  - platforms.json
+  - platforms.schema.json
+asar: true
+artifactName: "${productName}-${version}-${arch}.${ext}"
+electronDist: node_modules/electron/dist
+# Ensure chrome-sandbox is setuid root in the packaged tree (Linux norm: the
+# Chromium sandbox helper must be 4755 or the sandbox is unusable). See
+# build/after-pack.cjs.
+afterPack: build/after-pack.cjs
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Game
+  synopsis: Multiplatform cloud-gaming gateway
+  description: Sign in to a cloud-gaming provider and stream inside an isolated, registry-driven session.
+  maintainer: Project Gamingate <dev@gamingate.invalid>
+  desktop:
+    entry:
+      Name: Gamingate
+      Categories: Game;
+  syncDesktopName: true
+deb:
+  # Linux norm: setuid the sandbox helper at install (fpm drops the bit otherwise).
+  afterInstall: build/deb-after-install.sh
+win:
+  target:
+    - nsis
+nsis:
+  oneClick: true
+  perMachine: false
+# No `publish` block: local/unsigned builds must NOT generate an update feed, so
+# the app never makes a phantom update request (the updater is gated on a real
+# app-update.yml URL — see updateFeedConfigured() in src/main/index.ts). Release
+# CI supplies the real feed via `electron-builder --publish` + GH_TOKEN
+# (see docs/CI.md, docs/SIGNING.md).

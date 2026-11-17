@@ -1,0 +1,17 @@
+* text=auto eol=lf
+
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.icns binary
+*.svg  text
+*.AppImage binary
+*.deb  binary
+*.apk  binary
+*.msi  binary
+*.exe  binary
+
+package-lock.json linguist-generated=true
+*.schema.json linguist-generated=true
+
+docs/assets/** linguist-documentation=true

@@ -1,0 +1,16 @@
+Project Gamingate
+Copyright 2026 The Gamingate Authors
+
+This product includes software developed by third parties, including:
+
+  * Electron (https://www.electronjs.org/) and the Chromium project
+    (https://www.chromium.org/), licensed under the MIT license and
+    BSD-style licenses respectively.
+  * castlabs "Electron for Content Security" (ECS) build of Electron,
+    which provides Widevine CDM support (https://github.com/castlabs/electron-releases).
+  * Google Widevine (https://www.widevine.com/), a proprietary component
+    distributed by the vendor and subject to its own license terms.
+
+Gamingate does not redistribute any cloud-gaming provider's proprietary
+content. Provider web applications are loaded at runtime from their own
+origins under the user's own account.

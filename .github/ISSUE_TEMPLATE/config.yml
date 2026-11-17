@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/Chazyl/Gamingate/discussions
+    about: Ask questions, share setups, and discuss ideas here.
+  - name: Report a security vulnerability
+    url: https://github.com/Chazyl/Gamingate/security/advisories/new
+    about: Please report security issues privately, not as a public issue.
+  - name: Documentation
+    url: https://github.com/Chazyl/Gamingate/tree/main/docs
+    about: Building, architecture, packaging, signing, and CI docs.
