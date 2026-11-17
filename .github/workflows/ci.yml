@@ -82,7 +82,7 @@ jobs:
             bash -c 'shopt -s nullglob; cp /work/dist/latest*.yml /work/dist/*.blockmap /out/ 2>/dev/null || true'
           ls -la desktop/dist
       - name: Upload desktop artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desktop-linux
           if-no-files-found: error
@@ -115,7 +115,7 @@ jobs:
       - name: Package release APK (container)
         run: bash desktop/scripts/docker-verify.sh package-android
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-release
           if-no-files-found: error
