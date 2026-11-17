@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: CI workflow contract gate (container)
         run: bash desktop/scripts/docker-verify.sh ci-config
       - name: Desktop packaging config gate (container)
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Restore npm/electron/electron-builder cache
         uses: actions/cache@v4
         with:
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Restore npm/electron/Gradle cache
         uses: actions/cache@v4
         with:
