@@ -6,6 +6,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.0-rc.1] - 2026-11-17
+
+First public release candidate — the 1.0.0 feature set, published for early testing.
+
 ## [1.0.0] - 2026-11-17
 
 First public release. A registry-driven gateway that embeds cloud-gaming web apps
@@ -49,5 +53,6 @@ no iframe.
   `--appimage-extract-and-run`; prefer the `.deb` on those distros.
 - Hardware video decode is best-effort on Linux and depends on the GPU/driver.
 
-[Unreleased]: https://github.com/Chazyl/Gamingate/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Chazyl/Gamingate/compare/v1.0.0-rc.1...HEAD
+[1.0.0-rc.1]: https://github.com/Chazyl/Gamingate/releases/tag/v1.0.0-rc.1
 [1.0.0]: https://github.com/Chazyl/Gamingate/releases/tag/v1.0.0

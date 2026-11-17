@@ -1,6 +1,6 @@
 {
   "name": "gamingate-desktop",
-  "version": "0.0.1",
+  "version": "1.0.0-rc.1",
   "private": true,
   "description": "Gamingate - multiplatform cloud-gaming gateway (Electron desktop shell)",
   "main": "./out/main/index.js",
