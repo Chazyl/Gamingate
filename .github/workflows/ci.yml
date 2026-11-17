@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Restore npm/electron/electron-builder cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.GAMINGATE_CI_CACHE }}
           key: gamingate-cache-${{ runner.os }}-${{ hashFiles('desktop/package.json') }}
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Restore npm/electron/Gradle cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.GAMINGATE_CI_CACHE }}
           key: gamingate-cache-${{ runner.os }}-${{ hashFiles('desktop/package.json') }}
